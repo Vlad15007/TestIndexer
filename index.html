@@ -1,0 +1,45 @@
+<html>
+<head>
+    <style>
+        body{
+            background: #007072;
+        }
+    </style>
+</head>
+<body>
+    <p id="text"> </p>
+    <button onclick="myFunction()">Click me</button>
+    <script>
+        var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+
+        function myFunction() {
+            //recognition.lang = 'en-US'; // устанавливаем язык
+            recognition.lang = 'ru-Ru';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.start(); 
+
+            recognition.onresult = function (event) {
+                var speechResult = event.results[event.results.length - 1][0].transcript;
+                if (speechResult.toLowerCase().includes("джарвис")) {
+                    console.log('Результат: ' + speechResult);
+                    window.chrome.webview.hostObjects.dotnetHost.InvokeAction(speechResult);
+                }
+                
+            };
+
+            recognition.onspeechend = function () {
+                setTimeout(() => {
+                    recognition.start();
+                }, 1000)
+            };
+
+            recognition.onerror = function (event) {
+                console.log('Ошибка распознавания речи: ' + event.error);
+            };
+
+        }
+    </script>
+</body>
+</html>
